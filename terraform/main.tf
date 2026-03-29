@@ -183,7 +183,31 @@ resource "aws_iam_role_policy" "deploy" {
         Effect   = "Allow"
         Action   = "cloudfront:CreateInvalidation"
         Resource = aws_cloudfront_distribution.sleeping.arn
+      },
+      {
+        Sid    = "SSMRead"
+        Effect = "Allow"
+        Action = "ssm:GetParameter"
+        Resource = [
+          "arn:aws:ssm:us-east-1:842851109414:parameter/app-sleeping/*"
+        ]
       }
     ]
   })
+}
+
+# ------------------------------------------------------------
+# SSM parameters — consumed by deploy pipeline
+# ------------------------------------------------------------
+
+resource "aws_ssm_parameter" "bucket_name" {
+  name  = "/app-sleeping/bucket_name"
+  type  = "String"
+  value = aws_s3_bucket.sleeping.id
+}
+
+resource "aws_ssm_parameter" "cf_distribution_id" {
+  name  = "/app-sleeping/cf_distribution_id"
+  type  = "String"
+  value = aws_cloudfront_distribution.sleeping.id
 }

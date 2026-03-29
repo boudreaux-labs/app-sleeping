@@ -10,7 +10,6 @@ on:
 permissions:
   id-token: write
   contents: read
-  actions: write
 
 defaults:
   run:
@@ -86,16 +85,3 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve -var="cert_arn=${{ vars.CERT_ARN }}"
 
-      - name: Set deploy variables from Terraform outputs
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh variable set SLEEPING_BUCKET_NAME \
-            --body "$(terraform output -raw bucket_name)" \
-            --repo boudreaux-labs/app-sleeping
-          gh variable set SLEEPING_CF_DISTRIBUTION_ID \
-            --body "$(terraform output -raw cf_distribution_id)" \
-            --repo boudreaux-labs/app-sleeping
-          gh variable set SLEEPING_DEPLOY_ROLE_ARN \
-            --body "$(terraform output -raw deploy_role_arn)" \
-            --repo boudreaux-labs/app-sleeping
