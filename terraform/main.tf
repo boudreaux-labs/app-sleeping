@@ -1,6 +1,6 @@
 locals {
   bucket_name  = "boudreaux-labs-sleeping-page"
-  domain_names = ["sleeping.boudreauxlabs.com", "boudreauxlabs.com", "www.boudreauxlabs.com"]
+  domain_names = ["sleeping.boudreauxlabs.com", "www.boudreauxlabs.com"]
 }
 
 # ------------------------------------------------------------
