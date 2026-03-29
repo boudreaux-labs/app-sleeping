@@ -28,6 +28,32 @@ Provisions S3, CloudFront, Route53, IAM deploy role, and SSM parameters. Automat
 ### `deploy` — triggered on app source changes or after infra
 Builds the React app with Vite, syncs to S3, and invalidates the CloudFront cache. Reads bucket name and distribution ID from SSM at runtime — no static configuration needed.
 
+## Architecture
+
+```
+                        ┌─────────────────────────────────────────┐
+                        │           boudreauxlabs.com              │
+                        │         www.boudreauxlabs.com            │
+                        └──────────────┬──────────────────────────-┘
+                                       │ Route53 alias
+                          ┌────────────┴─────────────┐
+                    cluster UP                   cluster DOWN
+                          │                           │
+                    ┌─────▼──────┐           ┌────────▼────────┐
+                    │    ALB     │           │   CloudFront    │
+                    └─────┬──────┘           └────────┬────────┘
+                          │                           │ OAC
+                    ┌─────▼──────┐           ┌────────▼────────┐
+                    │  EKS pods  │           │     S3 bucket   │
+                    └────────────┘           └─────────────────┘
+
+ DNS swap (cluster DOWN):
+   dev-destroy pipeline → reads SSM → Route53 UPSERT → points apex/www at CloudFront
+
+ DNS restore (cluster UP):
+   External DNS on new cluster → detects Ingress annotations → overwrites apex/www back to ALB
+```
+
 ## Infrastructure
 
 All infrastructure is app-owned and lives in `terraform/`. State is stored in S3 (`boudreaux-labs-terraform-state`).
