@@ -126,6 +126,26 @@ resource "aws_cloudfront_distribution" "sleeping" {
 }
 
 # ------------------------------------------------------------
+# Route53 record
+# ------------------------------------------------------------
+
+data "aws_route53_zone" "boudreauxlabs" {
+  name = "boudreauxlabs.com"
+}
+
+resource "aws_route53_record" "sleeping" {
+  zone_id = data.aws_route53_zone.boudreauxlabs.zone_id
+  name    = "sleeping.boudreauxlabs.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.sleeping.domain_name
+    zone_id                = aws_cloudfront_distribution.sleeping.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# ------------------------------------------------------------
 # IAM OIDC role for deploy pipeline
 # ------------------------------------------------------------
 
