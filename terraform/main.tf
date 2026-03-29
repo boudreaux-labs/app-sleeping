@@ -231,3 +231,15 @@ resource "aws_ssm_parameter" "cf_distribution_id" {
   type  = "String"
   value = aws_cloudfront_distribution.sleeping.id
 }
+
+resource "aws_ssm_parameter" "cf_domain" {
+  name  = "/app-sleeping/cf_domain"
+  type  = "String"
+  value = aws_cloudfront_distribution.sleeping.domain_name
+}
+
+resource "aws_ssm_parameter" "cf_hosted_zone_id" {
+  name  = "/app-sleeping/cf_hosted_zone_id"
+  type  = "String"
+  value = aws_cloudfront_distribution.sleeping.hosted_zone_id
+}
